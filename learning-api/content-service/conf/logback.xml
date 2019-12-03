@@ -17,6 +17,7 @@
 
 
 	<logger name="play" level="INFO" />
+	<logger name="akka" level="INFO" />
 	<logger name="DefaultPlatformLogger" level="INFO" />
 	<!-- Telemetry Loggers-->
 	<logger name="TelemetryEventLogger" level="INFO" />
