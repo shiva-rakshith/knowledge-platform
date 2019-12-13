@@ -39,6 +39,7 @@ node('build-slave') {
             stage('Package') {
                 dir('learning-api') {
                     sh 'mvn play2:dist -pl content-service'
+                    sh 'unzip content-service/target/content-service-1.0-SNAPSHOT-dist.zip'
                 }
                 sh('chmod 777 ./build.sh')
                 sh("./build.sh ${build_tag} ${env.NODE_NAME} ${hub_org}")
