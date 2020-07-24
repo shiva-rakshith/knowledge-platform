@@ -65,7 +65,6 @@ public class NodeAsyncOperations {
         try (Session session = driver.session()) {
             String statementTemplate = StringUtils.removeEnd((String) entry.get(GraphDACParams.query.name()), CypherQueryConfigurationConstants.COMMA);
             Map<String, Object> statementParameters = (Map<String, Object>) entry.get(GraphDACParams.paramValueMap.name());
-
             CompletionStage<Node> cs = session.runAsync(statementTemplate, statementParameters)
             .thenCompose(fn -> fn.singleAsync())
             .thenApply(record -> {
@@ -78,7 +77,6 @@ public class NodeAsyncOperations {
                     node.getMetadata().put(GraphDACParams.versionKey.name(), versionKey);
                 return node;
             }).exceptionally(error -> {
-                        error.printStackTrace();
                         if (error.getCause() instanceof org.neo4j.driver.v1.exceptions.ClientException)
                             throw new ClientException(DACErrorCodeConstants.CONSTRAINT_VALIDATION_FAILED.name(), DACErrorMessageConstants.CONSTRAINT_VALIDATION_FAILED + node.getIdentifier());
                         else
@@ -122,7 +120,6 @@ public class NodeAsyncOperations {
         try(Session session = driver.session()) {
             String statement = StringUtils.removeEnd((String) entry.get(GraphDACParams.query.name()), CypherQueryConfigurationConstants.COMMA);
             Map<String, Object> statementParams = (Map<String, Object>) entry.get(GraphDACParams.paramValueMap.name());
-
             CompletionStage<Node> cs = session.runAsync(statement, statementParams).thenCompose(fn -> fn.singleAsync())
                     .thenApply(record -> {
                         org.neo4j.driver.v1.types.Node neo4JNode = record.get(DEFAULT_CYPHER_NODE_OBJECT).asNode();
@@ -134,7 +131,6 @@ public class NodeAsyncOperations {
                             node.getMetadata().put(GraphDACParams.versionKey.name(), versionKey);
                         return node;
                     }).exceptionally(error -> {
-                        error.printStackTrace();
                         throw new ServerException(DACErrorCodeConstants.SERVER_ERROR.name(),
                                 "Error! Something went wrong while creating node object. ", error.getCause());
                     });
@@ -216,8 +212,8 @@ public class NodeAsyncOperations {
             parameterMap.put(GraphDACParams.graphId.name(), graphId);
             parameterMap.put(GraphDACParams.rootNode.name(), node);
             parameterMap.put(GraphDACParams.request.name(), request);
-            String query = NodeQueryGenerationUtil.generateUpsertRootNodeCypherQuery(parameterMap);
-            CompletionStage<Node> cs = session.runAsync(query)
+
+            CompletionStage<Node> cs = session.runAsync(NodeQueryGenerationUtil.generateUpsertRootNodeCypherQuery(parameterMap))
                     .thenCompose(fn -> fn.singleAsync())
                     .thenApply(record -> {
                         org.neo4j.driver.v1.types.Node neo4JNode = record.get(DEFAULT_CYPHER_NODE_OBJECT).asNode();
@@ -229,7 +225,6 @@ public class NodeAsyncOperations {
                             node.getMetadata().put(GraphDACParams.versionKey.name(), versionKey);
                         return node;
                     }).exceptionally(error -> {
-                        error.printStackTrace();
                         if (error.getCause() instanceof org.neo4j.driver.v1.exceptions.ServiceUnavailableException)
                             throw new ServerException(DACErrorCodeConstants.CONNECTION_PROBLEM.name(),
                                     DACErrorMessageConstants.CONNECTION_PROBLEM + " | " + error.getMessage(), error.getCause());
