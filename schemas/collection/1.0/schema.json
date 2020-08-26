@@ -1002,6 +1002,12 @@
     "board" : {
       "type": "string"
     },
+    "licenseterms" : {
+      "type": "string"
+    },
+    "copyrightYear" : {
+      "type": "number"
+    },
     "monitorable": {
       "type": "array",
       "items": {
